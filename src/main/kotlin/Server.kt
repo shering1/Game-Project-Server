@@ -89,6 +89,9 @@ to where your package.json lives) and then it will run your build script(also us
 webpack and the bundle.js. It's important to keep all these files in your client folder(it was breaking otherwise)
 * */
 
+/*
+the target folder is created upon build and it holds the classes
+*/
 
 //other example from workshop... this is not working
 //get("/"){
