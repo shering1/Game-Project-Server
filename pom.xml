@@ -130,6 +130,12 @@
             <artifactId>ktor-server-tomcat</artifactId>
             <version>${io.ktor.version}</version>
         </dependency>
+        <dependency>
+            <groupId>io.ktor</groupId>
+            <artifactId>ktor-client-cio</artifactId>
+            <version>${io.ktor.version}</version>
+        </dependency>
+
 
         <!--Serialization/Deserialization-->
         <dependency>
@@ -163,11 +169,20 @@
             <artifactId>logstash-logback-encoder</artifactId>
             <version>${logstash-logback-encoder.version}</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>io.ktor</groupId>-->
-<!--            <artifactId>ktor-client-logging</artifactId>-->
-<!--            <version>${ktor_version}</version>-->
-<!--        </dependency>-->
+        <!--Server Web Socket-->
+        <dependency>
+            <groupId>io.ktor</groupId>
+            <artifactId>ktor-websockets</artifactId>
+            <version>${io.ktor.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.ktor</groupId>
+            <artifactId>ktor-client-websockets</artifactId>
+            <version>${io.ktor.version}</version>
+        </dependency>
+
+
+
 
     </dependencies>
 

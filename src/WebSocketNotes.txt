@@ -1,0 +1,22 @@
+Notes on Web Socket Connection:
+- A Web Socket Server is an application listening on a port of a TCP server that follows a specific protocol.
+
+The Web Socket Handshake:
+- The server must listen for incoming socket connections using a standard TCP socket
+- The Handshake is the Web in WebSockets. It's the bridge from HTTP to WebSockets.
+- The client has to start the WebSocket handshake process by contacting the server and requesting a WebSocket connection
+    - You must know how to interpret the clients request
+    - The client will send a standard HTTP request... the method must be GET
+
+Server Handshake Response:
+- When the server receives the handshake request, it should send back a special response that indicates that the protocol will be changing from HTTP
+to Web Socket
+
+Exchanging Data Frames:
+- Either the client of the server can choose to send a message at an time (that's the magic of WebSockets)
+- Each data frame follows the same format
+
+Pings and Pongs:
+- At any point after the handshake, wither the client or the server can choose to send a pint to the other party
+- When the pin is received, the recipient must send back a pong as soon as possible
+- A ping or pong is just a regular frame, but it's a control frame

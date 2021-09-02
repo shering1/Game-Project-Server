@@ -23,15 +23,15 @@ fun main() {
     }.start(wait = true) //start the server
 }
 
-
-
 //configures the server
 fun Application.module(){
     //Tell the server to use jackson serialization and deserialization for request
     install(ContentNegotiation){
         jackson()
     }
+
     routing {
+        //Static Assets
         static(""){ //creating a static route to serve static content, path is "/"
             staticRootFolder = File("/Users/shering/EverQuote/Kotlin/SettingUpAServer/public")
             files(".") //define the folder where we want the content to be served from -> "." means that all files within this folder are severable
@@ -39,12 +39,21 @@ fun Application.module(){
             //take all the files from public, and serve the files(".")which means that all files within public are serverable. if they just server / then server index.html
             //in our index.html we are serving /bundle.js
         }
+        //Routes
+        get("/api/players"){
+            println("The GET request to players has been hit")
+            call.respond(arrayOfPlayers)
+        }
+        post("/api/players"){
+            val newPlayer = call.receive<Player>() //ContentNegotiation is working here to negotiate the media type of request and deserialize the content to an object of a required type
+            arrayOfPlayers += newPlayer //add the new player to the arrayOfPlayers
+            println("This is the arrayOfPlayers, $arrayOfPlayers")
+            call.respond(newPlayer) //returns the newPlayer
+        }
 
-        //once the browser gets the index.html, it going to need to request static assests from the server(css, images, webpack)
-            //ex in express: app.use('/static', express.static(path.join(__dirname, 'public')))
-        //our server should send its index.html for any requests that don't match one of our API routes
-            //ex in express: app.get('*', (req, res)-> {
-        // res.sendFile(path.join(__dirname, './pathtoindex.html'))})
+
+
+        //Sentence Cards
         route(SentenceCard.path){ //all routes in this block are to /sentenceCards. this will not work w/o contentNegotiation
             get{
                 call.respond(sentenceCards) //i'm expecting this to return to me a json object
@@ -91,6 +100,15 @@ webpack and the bundle.js. It's important to keep all these files in your client
 
 /*
 the target folder is created upon build and it holds the classes
+*/
+
+/*
+Static Assets Notes
+//once the browser gets the index.html, it going to need to request static assests from the server(css, images, webpack)
+//ex in express: app.use('/static', express.static(path.join(__dirname, 'public')))
+//our server should send its index.html for any requests that don't match one of our API routes
+//ex in express: app.get('*', (req, res)-> {
+// res.sendFile(path.join(__dirname, './pathtoindex.html'))})
 */
 
 //other example from workshop... this is not working

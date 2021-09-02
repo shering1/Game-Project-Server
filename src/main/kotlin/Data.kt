@@ -10,6 +10,9 @@ var sentenceCards = mutableListOf(
     SentenceCard("sentenceCard5"),
 )
 
+//can create an empty array of players and add to this array everytime someone joins a game
+var arrayOfPlayers = mutableListOf<Player>()
+
 //var imageCards = mutableListOf<String>(
 //    "image1",
 //    "image2",
