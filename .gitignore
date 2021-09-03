@@ -4,3 +4,5 @@ bundle.js.map
 bundle.js.LICENSE.txt
 target
 node
+mainModule.iml
+.idea
