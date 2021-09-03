@@ -13,6 +13,9 @@ var sentenceCards = mutableListOf(
 //can create an empty array of players and add to this array everytime someone joins a game
 var arrayOfPlayers = mutableListOf<Player>()
 
+//create a map of games {gameCode: {GameObj}
+var games = HashMap<String, Game>()
+
 //var imageCards = mutableListOf<String>(
 //    "image1",
 //    "image2",

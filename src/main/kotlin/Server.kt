@@ -16,6 +16,14 @@ import io.ktor.server.tomcat.*
 import java.io.File
 
 
+//generating game code
+fun getRandomString(length: Int) : String {
+    val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
+    return (1..length)
+        .map { allowedChars.random() }
+        .joinToString("")
+}
+
 //starts the server
 fun main() {
     embeddedServer(Tomcat, port = 8080) { //create the server
@@ -39,16 +47,58 @@ fun Application.module(){
             //take all the files from public, and serve the files(".")which means that all files within public are serverable. if they just server / then server index.html
             //in our index.html we are serving /bundle.js
         }
-        //Routes
+        //ROUTES FOR PLAYERS
+        //getting all players
         get("/api/players"){
             println("The GET request to players has been hit")
             call.respond(arrayOfPlayers)
         }
+        //creating new players
         post("/api/players"){
             val newPlayer = call.receive<Player>() //ContentNegotiation is working here to negotiate the media type of request and deserialize the content to an object of a required type
             arrayOfPlayers += newPlayer //add the new player to the arrayOfPlayers
             println("This is the arrayOfPlayers, $arrayOfPlayers")
-            call.respond(newPlayer) //returns the newPlayer
+            call.respond(mutableListOf(newPlayer)) //returns the newPlayer
+        }
+
+        //ROUTES FOR GAME
+        //getting all active games
+        get("/api/games"){
+            call.respond(games)
+        }
+        //get the array of players for a specific game
+        get("/api/getPlayers/{code}"){
+            val code = call.parameters["code"]
+            val currentPlayers = games[code]!!.players
+            call.respond(currentPlayers)
+        }
+        //getting a specifc game ->HAVENT TESTED THIS OUT YET
+        get("/api/getGame/{code}"){
+            val code = call.parameters["code"]
+            val game = games[code]
+            call.respond(game!!)
+        }
+        //creating a new instance of a game
+        post("/api/game"){
+            println("api/game has been hit")
+            val playerCreatedGameInstance = call.receive<Game>()
+            println("whats in the game? ${playerCreatedGameInstance.imageCards}")
+            val code = getRandomString(4)
+            println("this is the code $code")
+            games[code] = playerCreatedGameInstance
+            println("this is the games map $games")
+            call.respond(games)
+        }
+        //adding a player to a joining game
+        post("/api/updatePlayer/{code}"){
+            println("You are in the post call for update players")
+            val addPlayer = call.receive<Player>()
+            val code = call.parameters["code"]
+            var findGame = games[code]
+            findGame!!.players += addPlayer
+            println("the code in the post $code")
+            println("this is the new games map $games")
+            call.respond(games)
         }
 
 
@@ -73,6 +123,7 @@ fun Application.module(){
     }
 
 }
+
 
 
 /*Main Function
