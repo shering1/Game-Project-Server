@@ -4,6 +4,7 @@ data class Game(var players: MutableList<Player>){
     var imageCards = mutableListOf<String>("hello this is an image card")
     var sentenceCards = mutableListOf<String>()
     var status = false
+    var code = ""
     //var mapOfPlayers: HashMap<String, Player> //{name: PlayerObj}
     var mapOfPlayers = players.associateBy{it.name} //takes listOfPlayers and makes it a map(it is a single object within the list) {name: PlayerObj}
     var winningPlayer = "hey winner!"
