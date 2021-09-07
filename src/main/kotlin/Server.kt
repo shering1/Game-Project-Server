@@ -72,22 +72,39 @@ fun Application.module(){
             val currentPlayers = games[code]!!.players
             call.respond(currentPlayers)
         }
-        //getting a specifc game ->HAVENT TESTED THIS OUT YET
+        //getting a specifc game
         get("/api/getGame/{code}"){
             val code = call.parameters["code"]
             val game = games[code]
             call.respond(game!!)
         }
+        //starting a game with new info
+        get("/api/startingGame/{code}"){
+            println("A new game request has been hit")
+            var currentGame = games[call.parameters["code"]]
+            currentGame!!.imageCards = imageCards
+            currentGame!!.sentenceCards = sentenceCards
+            currentGame!!.imageCard = currentGame!!.imageCards.removeLast()
+            for(player in currentGame!!.players){ //dealing out the sentence cards
+                var cards = mutableListOf<Card>()
+                while(cards.size < 3){
+                    cards.add(currentGame!!.sentenceCards.removeLast())
+                }
+                player.playersCards = cards
+            }
+            val idxOfHost = (0 until currentGame!!.players.size - 1).random()
+            currentGame!!.host = currentGame!!.players[idxOfHost].id //set the host the id of one player
+            currentGame!!.status = true //notify that the game has now started for all players
+            call.respond(currentGame!!)
+        }
         //creating a new instance of a game
         post("/api/game"){
-            println("api/game has been hit")
             val playerCreatedGameInstance = call.receive<Game>()
-            println("whats in the game? ${playerCreatedGameInstance.imageCards}")
             val code = getRandomString(4)
             println("this is the code $code")
             games[code] = playerCreatedGameInstance
-            println("this is the games map $games")
-            call.respond(games)
+            games[code]!!.code = code //adding the code to the game object
+            call.respond(games[code]!!) //sending back the game object
         }
         //adding a player to a joining game
         post("/api/updatePlayer/{code}"){
@@ -103,13 +120,13 @@ fun Application.module(){
 
 
 
-        //Sentence Cards
-        route(SentenceCard.path){ //all routes in this block are to /sentenceCards. this will not work w/o contentNegotiation
+        //Sentence Cards -> examples of get/post/delete routes
+        route(Card.path){ //all routes in this block are to /sentenceCards. this will not work w/o contentNegotiation
             get{
                 call.respond(sentenceCards) //i'm expecting this to return to me a json object
              }
             post{
-                val card = call.receive<SentenceCard>()
+                val card = call.receive<Card>()
                 sentenceCards += card
                 call.respond(card)
             }

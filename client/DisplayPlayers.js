@@ -1,5 +1,6 @@
 import React from 'react'
 import EnterName from "./EnterName";
+import {Redirect} from "react-router-dom";
 
 
 class DisplayPlayers extends React.Component{
@@ -10,10 +11,11 @@ class DisplayPlayers extends React.Component{
             game: null,
             status: null
         }
+        this.handleClick = this.handleClick.bind(this)
     }
 
 
-    //keep getting the updated players for the game code
+    //keep getting the updated game state
     async componentDidMount() {
         try{
             this.interval = setInterval(async() => {
@@ -37,21 +39,19 @@ class DisplayPlayers extends React.Component{
     }
     handleClick(){
         console.log("CLICKED")
-        //i will need to change the game status to true here
+        fetch(`/api/startingGame/${this.props.location.state.code}`)
+            .then(function(response){
+                return response.json()
+            })
+            .then(function(data){
+                console.log(`starting game returned data ${data}`)
+            })
 
     }
 
     render() {
-        // const players = this.props.location.state.players //this is the array of players - created variable for brevity sake
-        // const playersId = this.props.location.state.playersId //this is the playersId
-        // const playerToStartGame = players[0].id
-        console.log(`display players id -> ${this.props.location.state.playersId}`)
-        console.log(`display players code -> ${this.props.location.state.code}`)
-        console.log(`the current players -> ${this.state.players}`)
-        console.log(`the current game -> ${this.state.game}`)
-        console.log(`the current status -> ${this.state.status}`)
-        if(this.state.players){
-            console.log(`these are the current players length ${this.state.players.length}`)
+        if(this.state.status){
+            return <Redirect to={{pathname: '/game', state: {playersId: this.props.location.state.playersId, code: this.props.location.state.code, game: this.state.game}}}/>
         }
         if(!this.state.players){
             return(

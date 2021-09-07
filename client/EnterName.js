@@ -2,7 +2,7 @@ import React from 'react'
 import DisplayPlayers from "./DisplayPlayers";
 import {Redirect} from "react-router-dom";
 
-
+//THIS COMPONENT IS NOT BEING USED
 class EnterName extends React.Component{
     constructor(props) {
         super(props);

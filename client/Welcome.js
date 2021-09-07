@@ -56,14 +56,7 @@ class Welcome extends React.Component{
             })
             .then(function(data){
                 console.log(`this is data from /game ${data}`) //i should be sending back the game instance
-                let getCode = null
-                //FIND A DIFFERENT WAY TO DO THIS!!
-                for(let key in data){
-                    getCode = key
-                    break
-                }
-                console.log(`yo did i find the code?? ${getCode}`)
-                gettingAccessToThisKeyword.setState({clicked: true, code: getCode})
+                gettingAccessToThisKeyword.setState({clicked: true, code: data.code})
             })
     }
     handleSubmit(event){ //joining a game
@@ -108,11 +101,10 @@ class Welcome extends React.Component{
                 <button onClick={()=>this.handleClick()}>Start New Game</button>
                 <h2>OR</h2>
                 <form onSubmit={this.handleSubmit}>
-                    {/*<input type="submit" value="Submit" />*/}
-                    <button type="submit">Join Game</button>
                     <label>
                         <input type="text" placeholder="Enter Game Code" value={this.state.value} onChange={this.handleChange} />
                     </label>
+                    <button type="submit">Join Game</button>
                 </form>
             </div>
         )
