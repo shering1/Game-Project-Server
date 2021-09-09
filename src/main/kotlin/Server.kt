@@ -117,6 +117,35 @@ fun Application.module(){
             println("this is the new games map $games")
             call.respond(games)
         }
+        //updating the selected cards in the game
+        post("/api/selectedCards/{code}"){
+            println("You are in the selected cards post api")
+            var cardAndPlayersId = call.receive<Request>() //made a Request class to make it easier to receive the payload
+            var code = call.parameters["code"]
+            var currentGame = games[code] //game object
+            var selectedCards = currentGame!!.selectedCards //mutable list of pairs<Card, Int>
+            println("Th card Obj -> ${cardAndPlayersId.cardObj.id}")
+            selectedCards.add(Pair(cardAndPlayersId.cardObj, cardAndPlayersId.playersId))
+            call.respond(currentGame) //sending back the current game
+        }
+        //update the winner for the round as well as their score
+        post("/api/winnerOfRound/{code}"){
+            println("You are in the winnerRound api")
+            var sentenceAndPlayerId = call.receive<WinnerOfRound>()
+            var code = call.parameters["code"]
+            var currentGame = games[code] //game object
+            var nameOfWinner = ""
+            for(player in currentGame!!.players){
+                if(player.id == sentenceAndPlayerId.playersId){
+                    player.score++
+                    nameOfWinner = player.name
+                    break
+                }
+            }
+            currentGame.winnerOfRound.add(nameOfWinner)
+            currentGame.winnerOfRound.add(sentenceAndPlayerId.cardSentence)
+            call.respond(currentGame) //sending back to current game
+        }
 
 
 

@@ -5,8 +5,18 @@ class Game extends React.Component{
     constructor(props) {
         super(props);
         this.state = {
-            game: this.props.location.state.game
+            game: this.props.location.state.game,
+            activeCardId: null,
+            activeCardObj: null,
+            hostSelecting: false,
+            activeSelectedCard: null,
+            winningSentenceCard: null,
+            winningPlayerId: null
+
         }
+        this.handleClick = this.handleClick.bind(this)
+        this.handleSubmit = this.handleSubmit.bind(this)
+        this.handleSelectCardClick = this.handleSelectCardClick.bind(this)
     }
     //keep getting the updated game object
     async componentDidMount() {
@@ -28,8 +38,69 @@ class Game extends React.Component{
         clearInterval(this.interval)
         console.log(`in unmount ${this.interval}`)
     }
-    handleClick(cardId){
-        console.log("CLICK")
+
+    //changing the active state of the sentence cards
+    handleClick(cardId, card){
+        console.log(`click -> ${cardId}`)
+        if(this.state.active){
+            this.setState({active: null})
+        }else{
+            this.setState({activeCardId: cardId, activeCardObj: card})
+        }
+    }
+
+    //changing the active state of the selected cards
+    handleSelectCardClick(cardId, cardSentence, playerId){
+        //make a post request that puts the curent winner name and sentence on the game and also updates the winners score
+        if(this.state.activeSelectedCard !== null){
+            this.setState({activeSelectedCard: null})
+        }else{
+            this.setState({activeSelectedCard: cardId, winningSentenceCard: cardSentence, winningPlayerId: playerId})
+        }
+    }
+
+    //making an api post call to add the winning player of the round
+    handleWinnerSubmit(){
+        console.log("THE HOST SUBMITTED A CARD")
+        const payload = {cardSentence: this.state.winningSentenceCard, playersId: this.state.winningPlayerId}
+        const options = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload)
+        }
+        fetch(`/api/winnerOfRound/${this.state.game.code}`, options)
+            .then(function(response){
+                console.log(`this is the response from /winnerOfRound ${response.json}`)
+                return response.json()
+            })
+            .then(function(data){
+                console.log(`this is data from /winnerOfRound ${data}`)
+            })
+
+    }
+
+    //api post call the add the selected cards to the game
+    handleSubmit(){
+        this.setState({hostSelecting: true})
+        const payload = {cardId: this.state.activeCardId, playersId: this.props.location.state.playersId, cardObj: this.state.activeCardObj}
+        const options = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload)
+        }
+        fetch(`/api/selectedCards/${this.props.location.state.code}`, options)
+            .then(function(response){
+                console.log(`this is the response from /selectedCards ${response.json}`)
+                return response.json()
+            })
+            .then(function(data){
+                console.log(`this is data from /selectedCards ${data}`)
+            })
+
 
     }
     render() {
@@ -40,8 +111,27 @@ class Game extends React.Component{
         return(
             <div>
                 <h1>You are ready to play a game!</h1>
-                <h2>{this.state.game.imageCard}</h2>
+                <img src={this.state.game.imageCard.description}></img>
+                {/*SELECTED CARDS*/}
+                {this.state.game.selectedCards.length === 0 && this.state.game.host === this.props.location.state.playersId ? <div><h3>Waiting for players to submit a card...</h3></div> : null}
+                {this.state.game.selectedCards.map((pair)=>
+                    <div className="selectedCards">
+                        <div className={this.state.activeSelectedCard === pair.first.id ? "activeCard" : null} onClick={()=> this.handleSelectCardClick(pair.first.id, pair.first.description, pair.second)}>{pair.first.description}</div>
+                    </div>
+                )}
+                {this.state.game.selectedCards.length > 0 && this.state.game.host === this.props.location.state.playersId ? <button onClick={()=> this.handleWinnerSubmit()}>Submit Winner</button> : null}
 
+                {/*Winning Card For the Round*/}
+                <div className="winningCardForRound">
+                    {this.state.game.winnerOfRound.length > 0 ?
+                        <div>Winning Player: {this.state.game.winnerOfRound[0]}, Winning Sentence: {this.state.game.winnerOfRound[1]}</div>
+                     : null
+                    }
+                </div>
+
+
+
+                {/*SENTENCE CARDS*/}
                 {this.props.location.state.playersId !== this.state.game.host ?
                 <div>
                     {this.state.game.players.map((player)=> {
@@ -54,13 +144,14 @@ class Game extends React.Component{
                             // })
                         }
                     })}
-                    {playersSentenceCards.map((card)=> {
-                        return <div className="sentenceCards" id={card.id} title={card.description} onClick={()=>this.handleClick(card.id)} >{card.description}</div>
-                    })}
+                    {playersSentenceCards.map((card)=>
+                        <div className="sentenceCards">
+                                  <div className={this.state.activeCardId === card.id && !this.state.hostSelecting ? "activeCard" : null} id={card.id} title={card.description} onClick={()=>this.handleClick(card.id, card)}>{card.description}</div>
+                               </div>
+                    )}
+                    {!this.state.hostSelecting ? <button onClick={()=>this.handleSubmit()}>Submit Card</button> : <h3>Waiting for the host to select a winner...</h3>}
                 </div>
-                :
-                    <div><h1>Waiting for players to select cards</h1></div>
-                }
+                : null }
             </div>
         )
     }

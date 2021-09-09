@@ -1,14 +1,16 @@
 package com.example
 
 data class Game(var players: MutableList<Player>){
-    var imageCards = mutableListOf<String>()
+    var imageCards = mutableListOf<Card>()
     var sentenceCards = mutableListOf<Card>()
     var status = false
     var code = ""
-    var imageCard = ""
+    var imageCard = Card("imageCard")
     var host = 0
+    var selectedCards = mutableListOf<Pair<Card, Int>>() //{cardObj, playerId}
     //var mapOfPlayers: HashMap<String, Player> //{name: PlayerObj}
     var mapOfPlayers = players.associateBy{it.name} //takes listOfPlayers and makes it a map(it is a single object within the list) {name: PlayerObj}
+    var winnerOfRound = mutableListOf<String>() //["name", "sentence"]
     var winningPlayer = ""
     //when is game over?? -> game needs to know
     fun checkIfWinner(): Boolean{
@@ -45,3 +47,7 @@ data class Game(var players: MutableList<Player>){
 //    }
 
 }
+
+data class Request(var cardId: Int, var playersId: Int, var cardObj: Card)
+
+data class WinnerOfRound(var cardSentence: String, var playersId: Int)
