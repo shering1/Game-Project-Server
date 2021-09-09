@@ -117,6 +117,7 @@ class Game extends React.Component{
         console.log(`code in Game -> ${this.props.location.state.code}`)
         console.log(`game state in Game -> ${this.props.location.state.game}`)
         console.log(`DO WE HAVE A WINNER -> ${this.state.game.winningPlayer}`)
+        console.log(`this is the image for the round ${this.state.game.imageCard}`)
         let playersSentenceCards = null
         if(this.state.game.winningPlayer.length > 0){
             return(

@@ -82,8 +82,8 @@ fun Application.module(){
         get("/api/startingGame/{code}"){
             println("A new game request has been hit")
             var currentGame = games[call.parameters["code"]]
-            currentGame!!.imageCards = imageCards
-            currentGame!!.sentenceCards = sentenceCards
+            currentGame!!.imageCards = imageCards.toMutableList() //creating a mutable list obj clone so i don't manipulate the original data
+            currentGame!!.sentenceCards = sentenceCards.toMutableList()
             currentGame!!.imageCard = currentGame!!.imageCards.removeLast()
             for(player in currentGame!!.players){ //dealing out the sentence cards
                 var cards = mutableListOf<Card>()
