@@ -4,7 +4,7 @@
     border: 3px solid gray;
     margin: 2%;
     cursor: pointer;
-    display: flex;
+    display: inline-block;
 }
 
 .selectedCards{
@@ -17,7 +17,7 @@
 }
 
 .winningCardForRound{
-    width: 320px;
+    width: 700px;
     padding: 10px;
     border: 3px solid red;
     margin: 2%;

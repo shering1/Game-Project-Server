@@ -97,6 +97,29 @@ fun Application.module(){
             currentGame!!.status = true //notify that the game has now started for all players
             call.respond(currentGame!!)
         }
+        //starting a new round
+        get("/api/newRound/{code}"){
+            println("new round api has been hit")
+            var code = call.parameters["code"]
+            var currentGame = games[code] //game obj
+            currentGame!!.hostSelecting = false
+            currentGame!!.imageCard = currentGame.imageCards.removeLast()
+            for(player in currentGame!!.players){ //dealing out the sentence cards
+                if(player.score == 2){ //checking for a winning player
+                    currentGame.winningPlayer = player.name
+                }
+                var cards = mutableListOf<Card>()
+                while(cards.size < 3){
+                    cards.add(currentGame!!.sentenceCards.removeLast())
+                }
+                player.playersCards = cards
+            }
+            val idxOfHost = (0 until currentGame!!.players.size - 1).random()
+            currentGame!!.host = currentGame!!.players[idxOfHost].id //set the host the id of one player
+            currentGame.winnerOfRound = mutableListOf<String>()
+            currentGame.selectedCards = mutableListOf<Pair<Card, Int>>()
+            call.respond(currentGame) //sending back the current game obj
+        }
         //creating a new instance of a game
         post("/api/game"){
             val playerCreatedGameInstance = call.receive<Game>()
@@ -123,6 +146,7 @@ fun Application.module(){
             var cardAndPlayersId = call.receive<Request>() //made a Request class to make it easier to receive the payload
             var code = call.parameters["code"]
             var currentGame = games[code] //game object
+            currentGame!!.hostSelecting = true
             var selectedCards = currentGame!!.selectedCards //mutable list of pairs<Card, Int>
             println("Th card Obj -> ${cardAndPlayersId.cardObj.id}")
             selectedCards.add(Pair(cardAndPlayersId.cardObj, cardAndPlayersId.playersId))
@@ -144,6 +168,7 @@ fun Application.module(){
             }
             currentGame.winnerOfRound.add(nameOfWinner)
             currentGame.winnerOfRound.add(sentenceAndPlayerId.cardSentence)
+            println("curr players ${currentGame.players}")
             call.respond(currentGame) //sending back to current game
         }
 

@@ -12,6 +12,7 @@ data class Game(var players: MutableList<Player>){
     var mapOfPlayers = players.associateBy{it.name} //takes listOfPlayers and makes it a map(it is a single object within the list) {name: PlayerObj}
     var winnerOfRound = mutableListOf<String>() //["name", "sentence"]
     var winningPlayer = ""
+    var hostSelecting = false
     //when is game over?? -> game needs to know
     fun checkIfWinner(): Boolean{
         for(player in players){
