@@ -23,6 +23,24 @@ data class Game(var players: MutableList<Player>){
         }
         return false
     }
+
+    // start the game
+    // - deal the cards
+    // - initial host is the host now for the first round
+    // - create the first round
+    // - execute the round
+    // - check if there's a winner
+    // deal out cards
+    // - find a new host
+    // repeat
+
+
+    // round
+    // pick a meme
+    // all players (besides host) give the host a card
+    // host picks favorite
+    // return a winner -> give the winner the meme or update meme count
+
 //    fun play(){
 //        //while one player hasn't hit 5 points, keep running rounds, initialize a brand new round each time
 //        while(!checkIfWinner()){ //top player doesn't have 5 points
